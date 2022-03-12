@@ -16,6 +16,8 @@ CreamVol = 1
 # newton cooling rate
 r = 0.001
 
+# Did my work from here
+
 def rate_func(t,y):
     global RoomTemp, r
     rate = -r * (y - RoomTemp)
@@ -35,6 +37,8 @@ Temp = odeint(rate_func, HotCoffeeTemp, time, tfirst=True)
 plot(time,Temp)
 
 show()
+
+# To here, since rest was done collaboratively in class
 
 def mix_func(V1,T1,V2,T2):
     # Calculates the final temperature of two liquids after they have been
