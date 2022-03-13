@@ -57,7 +57,10 @@ X = picture.reshape((row*col,),order='F')
 sig=zeros(meig)
 ### Create a for loop and compute each sig[i]
 
+print(shape(u))
 
+for i in range(meig):
+    sig[i] = dot(X,u[:,i])
 '''
 Now reconstruct the image using a subset of eigenvectors
 here we sum over each eigenvector (ie columns of u(:,i)) after multiplying by
@@ -76,7 +79,8 @@ m_rec = 20 # number of images to use for reconstruction < meig
 Xrec = zeros(size(X)) # all zeros and size of the original vector
 ### Create a for loop and sum to get Xrec
 
-
+for i in range(m_rec):
+    Xrec = Xrec + sig[i] * u[:,i]
 
 # Note that if we were to take the above sum for m_rec=mpic, we'd be
 # exactly inverting the computation in the earlier loop that computs the
@@ -100,7 +104,7 @@ pcolormesh(picture,cmap=cmap)
 subplot(1,2,2)
 pcolormesh(Xrec.reshape((row,col),order='F'),cmap=cmap) 
 
-
+show()
 '''
 2 Reconstruct a messed-up image 
 '''
@@ -108,7 +112,66 @@ pcolormesh(Xrec.reshape((row,col),order='F'),cmap=cmap)
 # Select an image and add some random speckle of specified amplitude
 i_img = 2 # select an arbitrary image
 noiselevel=2 # the magnitude of the noise relative to average
-picture = pics[:,:,i_img] + rand(row,col) * noiselevel*mean(pics[:,:,i_img]) 
+picture = pics[:,:,i_img] + rand(row,col) * noiselevel*mean(pics[:,:,i_img])
+
+# put the face into a vector
+X = picture.reshape((row*col,),order='F')
+
+# get the coordinates of this face in our eigenvector space using the dot prodcuct (dot(a,b) in numpy)
+#         sig_i = X•u_i
+
+sig=zeros(meig)
+### Create a for loop and compute each sig[i]
+
+print(shape(u))
+
+for i in range(meig):
+    sig[i] = dot(X,u[:,i])
+'''
+Now reconstruct the image using a subset of eigenvectors
+here we sum over each eigenvector (ie columns of u(:,i)) after multiplying by
+the appropriate coordinate value (coord):
+
+Xrec = sig(1)*u(1) + sig(2)*u(2) + ... + sig(n)*u(n)
+
+where sig(i) are the coordinates and u(i) are the eigenvectors
+but we use a for loop to do this.
+'''
+
+m_rec = meig # number of images to use for reconstruction < meig
+
+
+# Loop and sum over the eigenvalues
+Xrec = zeros(size(X)) # all zeros and size of the original vector
+### Create a for loop and sum to get Xrec
+
+for i in range(m_rec):
+    Xrec = Xrec + sig[i] * u[:,i]
+
+# Note that if we were to take the above sum for m_rec=mpic, we'd be
+# exactly inverting the computation in the earlier loop that computs the
+# coordinates. By truncating the sum to fewer terms, we get an approximation.
+
+
+# plot the image coordinates
+figure(1)
+
+ll = arange(meig)
+stem(ll,sig) # this makes a "stem plot"
+title('Weight of Input Face') # ,'fontsize',14)
+
+# draw the face
+figure(2)
+subplot(1,2,1)
+cmap=get_cmap('gray')
+pcolormesh(picture,cmap=cmap)
+
+# draw the reconstructed image.
+subplot(1,2,2)
+pcolormesh(Xrec.reshape((row,col),order='F'),cmap=cmap)
+
+show()
+
 
 #### Same as above from  picture = pics[:,:,i_img]  ########
 
@@ -117,3 +180,64 @@ picture = pics[:,:,i_img] + rand(row,col) * noiselevel*mean(pics[:,:,i_img])
 i_img=39 was not used for computing the eigen values u
 see what happens if you use this image
 '''
+# Select an image from the training set onto eigen vectors
+i_img = 39 # select an arbitrary image
+picture = pics[:,:,i_img]
+
+# put the face into a vector
+X = picture.reshape((row*col,),order='F')
+
+# get the coordinates of this face in our eigenvector space using the dot prodcuct (dot(a,b) in numpy)
+#         sig_i = X•u_i
+
+sig=zeros(meig)
+### Create a for loop and compute each sig[i]
+
+print(shape(u))
+
+for i in range(meig):
+    sig[i] = dot(X,u[:,i])
+'''
+Now reconstruct the image using a subset of eigenvectors
+here we sum over each eigenvector (ie columns of u(:,i)) after multiplying by
+the appropriate coordinate value (coord):
+
+Xrec = sig(1)*u(1) + sig(2)*u(2) + ... + sig(n)*u(n)
+
+where sig(i) are the coordinates and u(i) are the eigenvectors
+but we use a for loop to do this.
+'''
+
+m_rec = 20 # number of images to use for reconstruction < meig
+
+
+# Loop and sum over the eigenvalues
+Xrec = zeros(size(X)) # all zeros and size of the original vector
+### Create a for loop and sum to get Xrec
+
+for i in range(m_rec):
+    Xrec = Xrec + sig[i] * u[:,i]
+
+# Note that if we were to take the above sum for m_rec=mpic, we'd be
+# exactly inverting the computation in the earlier loop that computs the
+# coordinates. By truncating the sum to fewer terms, we get an approximation.
+
+
+# plot the image coordinates
+figure(1)
+
+ll = arange(meig)
+stem(ll,sig) # this makes a "stem plot"
+title('Weight of Input Face') # ,'fontsize',14)
+
+# draw the face
+figure(2)
+subplot(1,2,1)
+cmap=get_cmap('gray')
+pcolormesh(picture,cmap=cmap)
+
+# draw the reconstructed image.
+subplot(1,2,2)
+pcolormesh(Xrec.reshape((row,col),order='F'),cmap=cmap)
+
+show()
